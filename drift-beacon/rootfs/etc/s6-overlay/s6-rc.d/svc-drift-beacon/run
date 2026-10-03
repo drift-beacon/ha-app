@@ -1,0 +1,24 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+
+# Read port from environment (defaults to 3000 for internal use)
+PORT=${SERVICE_PORT:-3000}
+
+bashio::log.info "Starting Drift Beacon on port ${PORT}..."
+
+# Change to app directory
+cd /app/apps/server || exit 1
+
+# Set environment
+export NODE_ENV=production
+export PORT="$PORT"
+
+# Browser origins besides the add-on's own whose pages may change state or open WebSockets (a reverse proxy that
+# rewrites Host).
+if bashio::config.has_value 'trusted_origins'; then
+    PLUGIN_UI_TRUSTED_ORIGINS="$(bashio::config 'trusted_origins')"
+    export PLUGIN_UI_TRUSTED_ORIGINS
+fi
+
+# Start server
+exec node --disable-sigusr1 dist/index.js
