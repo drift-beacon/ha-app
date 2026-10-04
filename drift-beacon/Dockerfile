@@ -2,7 +2,7 @@
 
 ARG NODE_VERSION=26.10.0
 ARG BUILD_FROM
-ARG SERVER_IMAGE=ghcr.io/rshallam/drift-beacon-server:0.2.44
+ARG SERVER_IMAGE=ghcr.io/rshallam/drift-beacon-server:0.2.45
 
 FROM ${SERVER_IMAGE} AS server
 FROM ${BUILD_FROM} AS runtime
@@ -21,9 +21,11 @@ ENV NGINX_PORT_HTTP=9001
 WORKDIR /app
 
 # libatomic1: the official Node.js binaries link against it, and the base image doesn't ship it.
+# git: plugin catalogues are scanned from shallow HTTPS clones at runtime.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
+    git \
     jq \
     libatomic1 \
     nginx \
@@ -39,7 +41,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         --exclude='*/include' --exclude='*/lib/node_modules' --exclude='*/bin/npm' --exclude='*/bin/npx' \
         --exclude='*/CHANGELOG.md' --exclude='*/README.md' \
     && rm node.tar.xz \
-    && node --version
+    && node --version \
+    && git --version \
+    && test -x "$(git --exec-path)/git-remote-https"
     # Note: curl is kept installed for bashio to contact HA API
 
 # Install tempio for nginx config templating
