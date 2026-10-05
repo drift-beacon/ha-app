@@ -2,7 +2,7 @@
 
 ARG NODE_VERSION=26.10.0
 ARG BUILD_FROM
-ARG SERVER_IMAGE=ghcr.io/rshallam/drift-beacon-server:0.2.45
+ARG SERVER_IMAGE=ghcr.io/rshallam/drift-beacon-server:0.2.46
 
 FROM ${SERVER_IMAGE} AS server
 FROM ${BUILD_FROM} AS runtime
