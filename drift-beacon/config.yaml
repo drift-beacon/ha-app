@@ -15,6 +15,7 @@ ports_description:
 environment:
   NODE_ENV: production
   DEVICE_TYPE: home_assistant
+  DEVICE_NAME: Home Assistant
   PUSH_WORKER_URL: https://push.driftbeacon.app
 startup: application
 boot: auto

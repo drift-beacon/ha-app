@@ -59,8 +59,11 @@ RUN chmod +x /usr/local/bin/*.sh \
     && chmod +x /etc/s6-overlay/s6-rc.d/*/run
 RUN mkdir -p /data
 
+# DATA_DIR: the add-on's persistent volume. Without it the server writes `data` in its working directory, inside the
+# image, and an update starts with no accounts.
 ENV NODE_ENV=production \
-    PORT=9823
+    PORT=9823 \
+    DATA_DIR=/data
 
 # Expose ports
 EXPOSE 9000
