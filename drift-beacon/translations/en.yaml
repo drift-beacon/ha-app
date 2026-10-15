@@ -1,0 +1,16 @@
+configuration:
+  ssl:
+    name: HTTPS
+    description: Serve the hub over HTTPS on port 9000. HTTP stays available on port 9001.
+  certfile:
+    name: Certificate file
+    description: Certificate filename in the /ssl share. A self-signed certificate is used when it is missing.
+  keyfile:
+    name: Private key file
+    description: Private-key filename in the /ssl share.
+  trusted_origins:
+    name: Trusted origins
+    description: Extra browser origins allowed to use the hub, comma-separated. Only needed behind a reverse proxy that rewrites Host.
+  log_level:
+    name: Log level
+    description: Choose debug for detailed lines when diagnosing a problem. Warnings and errors are always logged.

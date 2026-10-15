@@ -20,5 +20,11 @@ if bashio::config.has_value 'trusted_origins'; then
     export PLUGIN_UI_TRUSTED_ORIGINS
 fi
 
+# debug adds Debug lines to the log; unset, the server logs at info.
+if bashio::config.has_value 'log_level'; then
+    LOG_LEVEL="$(bashio::config 'log_level')"
+    export LOG_LEVEL
+fi
+
 # Start server
 exec node --disable-sigusr1 dist/index.js

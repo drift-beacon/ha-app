@@ -16,6 +16,7 @@ Port mappings are configured in the add-on's Network settings. There is no `port
 | `certfile` | Certificate filename in the `/ssl` share; defaults to `fullchain.pem` |
 | `keyfile` | Private-key filename in the `/ssl` share; defaults to `privkey.pem` |
 | `trusted_origins` | Extra browser origins allowed to use the hub, comma-separated (for example `https://drift.example.com`). Only needed behind a reverse proxy that rewrites `Host`; empty by default |
+| `log_level` | `debug` adds detailed lines to the log, for diagnosing a problem; `info` or unset is the normal log. Warnings and errors are always logged |
 
 When either configured certificate file is missing, the add-on creates or reuses a self-signed certificate in its persistent data directory. Clients may show a certificate warning. Use a certificate trusted by your clients when they require certificate verification.
 

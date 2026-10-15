@@ -1,5 +1,5 @@
 name: Drift Beacon
-version: "0.2.49"
+version: "0.2.50"
 slug: drift-beacon
 description: Activity tracking
 url: https://github.com/drift-beacon/ha-app
@@ -30,6 +30,9 @@ schema:
   keyfile: str?
   # PLUGIN_UI_TRUSTED_ORIGINS: browser origins besides the add-on's own.
   trusted_origins: str?
+  # LOG_LEVEL: debug adds Debug lines to the log; unset is info. Warnings and errors are always logged, and the server
+  # refuses to start on any other value, so the list holds exactly the two it accepts.
+  log_level: list(info|debug)?
 options:
   ssl: true
   certfile: fullchain.pem
