@@ -17,7 +17,7 @@ if [ -f "$ROOT/Dockerfile" ] && [ -f "$ROOT/package.json" ]; then
   DOCKERFILE="$ROOT/Dockerfile"
   CONFIG_FILE="$ROOT/config.yaml"
   VERSION_FILE="$ROOT/package.json"
-  # The release version the server reports (/api/info, its device record).
+  # The version the server reports.
   SERVER_PACKAGE="$ROOT/apps/server/package.json"
   REPOSITORY="source"
 elif [ -f "$ROOT/drift-beacon/Dockerfile" ]; then

@@ -13,4 +13,3 @@ configuration:
     description: Extra browser origins allowed to use the hub, comma-separated. Only needed behind a reverse proxy that rewrites Host.
   log_level:
     name: Log level
-    description: Choose debug for detailed lines when diagnosing a problem. Warnings and errors are always logged.

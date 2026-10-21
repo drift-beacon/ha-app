@@ -26,7 +26,7 @@ if bashio::config.has_value 'log_level'; then
     export LOG_LEVEL
 fi
 
-# The app's own version, for the hub's device record. /addons/self/info needs no Supervisor API access.
+# For the hub's device record; /addons/self/info needs no hassio_api.
 ADDON_VERSION="$(bashio::addon.version)"
 export ADDON_VERSION
 

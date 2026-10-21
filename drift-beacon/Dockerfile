@@ -69,8 +69,7 @@ ENV NODE_ENV=production \
 EXPOSE 9000
 EXPOSE 9001
 
-# Health check: liveness through nginx's plain-HTTP port, which serves with SSL on and off, so the proxy path is tested
-# too. 10 s apart: the Supervisor shows the app as starting until the first result. No --start-interval: it needs
-# Docker 25, and the Supervisor still supports 24.
+# Liveness through nginx's plain-HTTP port, which serves with SSL on and off. No --start-interval: it needs Docker 25,
+# and the Supervisor still supports 24.
 HEALTHCHECK --interval=10s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -fsS -o /dev/null "http://localhost:${NGINX_PORT_HTTP}/api/livez" || exit 1

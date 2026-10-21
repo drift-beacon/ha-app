@@ -1,10 +1,9 @@
 #!/usr/bin/with-contenv bashio
 # shellcheck shell=bash
 
-# Stop the container when the server fails, so Home Assistant sees it: the Supervisor logs the exit code, shows the
-# app as failed, and with Watchdog on restarts it. Without this s6 restarts Node inside the container and nothing
-# outside it notices. Exit 0 is a clean stop (the server exits 0 on SIGTERM), and 256 is s6 stopping the service with
-# a signal while the container stops; neither halts.
+# Halt the container when the server fails, so the Supervisor sees it (logs the code, shows the app as failed, restarts
+# it with Watchdog on); s6 would otherwise restart Node unseen. 0 is a clean stop and 256 is s6 ending the service with
+# a signal during a stop.
 EXIT_CODE="${1}"
 
 if [[ "${EXIT_CODE}" -eq 0 ]] || [[ "${EXIT_CODE}" -eq 256 ]]; then

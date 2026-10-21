@@ -19,8 +19,8 @@ environment:
   PUSH_WORKER_URL: https://push.driftbeacon.app
 startup: application
 boot: auto
-# With Watchdog turned on, the Supervisor also checks the app from outside every 120 s and restarts it after two
-# misses. The plain-HTTP port, which listens with SSL on and off.
+# The Supervisor's outside check, with Watchdog on: every 120 s, a restart after two misses. 9001 serves with SSL off
+# too.
 watchdog: "http://[HOST]:[PORT:9001]/api/livez"
 # Seconds Home Assistant waits for the add-on to stop before killing it (10 when unset): the server's graceful
 # shutdown, then s6-overlay's final sleep. The server's tests check it covers both with a margin.
@@ -33,11 +33,12 @@ schema:
   keyfile: str?
   # PLUGIN_UI_TRUSTED_ORIGINS: browser origins besides the add-on's own.
   trusted_origins: str?
-  # LOG_LEVEL: debug adds Debug lines to the log; unset is info. Warnings and errors are always logged, and the server
-  # refuses to start on any other value, so the list holds exactly the two it accepts.
-  log_level: list(info|debug)?
+  # LOG_LEVEL: debug adds Debug lines to the log. Warnings and errors are always logged, and the server refuses to start
+  # on any other value, so the list holds exactly the two it accepts. Required with a default, so the form shows it.
+  log_level: list(info|debug)
 options:
   ssl: true
   certfile: fullchain.pem
   keyfile: privkey.pem
+  log_level: info
 init: false
