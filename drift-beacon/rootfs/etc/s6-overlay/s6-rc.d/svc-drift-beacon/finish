@@ -1,0 +1,16 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+
+# Stop the container when the server fails, so Home Assistant sees it: the Supervisor logs the exit code, shows the
+# app as failed, and with Watchdog on restarts it. Without this s6 restarts Node inside the container and nothing
+# outside it notices. Exit 0 is a clean stop (the server exits 0 on SIGTERM), and 256 is s6 stopping the service with
+# a signal while the container stops; neither halts.
+EXIT_CODE="${1}"
+
+if [[ "${EXIT_CODE}" -eq 0 ]] || [[ "${EXIT_CODE}" -eq 256 ]]; then
+  exit 0
+fi
+
+bashio::log.error "Drift Beacon exited with code ${EXIT_CODE}; stopping the app"
+echo "${EXIT_CODE}" > /run/s6-linux-init-container-results/exitcode
+exec /run/s6/basedir/bin/halt

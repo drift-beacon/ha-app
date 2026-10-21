@@ -1,5 +1,5 @@
 name: Drift Beacon
-version: "0.2.51"
+version: "0.2.52"
 slug: drift-beacon
 description: Activity tracking
 url: https://github.com/drift-beacon/ha-app
@@ -19,6 +19,9 @@ environment:
   PUSH_WORKER_URL: https://push.driftbeacon.app
 startup: application
 boot: auto
+# With Watchdog turned on, the Supervisor also checks the app from outside every 120 s and restarts it after two
+# misses. The plain-HTTP port, which listens with SSL on and off.
+watchdog: "http://[HOST]:[PORT:9001]/api/livez"
 # Seconds Home Assistant waits for the add-on to stop before killing it (10 when unset): the server's graceful
 # shutdown, then s6-overlay's final sleep. The server's tests check it covers both with a margin.
 timeout: 30

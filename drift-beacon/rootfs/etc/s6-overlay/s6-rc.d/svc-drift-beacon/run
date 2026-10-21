@@ -26,5 +26,9 @@ if bashio::config.has_value 'log_level'; then
     export LOG_LEVEL
 fi
 
+# The app's own version, for the hub's device record. /addons/self/info needs no Supervisor API access.
+ADDON_VERSION="$(bashio::addon.version)"
+export ADDON_VERSION
+
 # Start server
 exec node --disable-sigusr1 dist/index.js

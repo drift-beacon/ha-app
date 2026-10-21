@@ -17,6 +17,8 @@ if [ -f "$ROOT/Dockerfile" ] && [ -f "$ROOT/package.json" ]; then
   DOCKERFILE="$ROOT/Dockerfile"
   CONFIG_FILE="$ROOT/config.yaml"
   VERSION_FILE="$ROOT/package.json"
+  # The release version the server reports (/api/info, its device record).
+  SERVER_PACKAGE="$ROOT/apps/server/package.json"
   REPOSITORY="source"
 elif [ -f "$ROOT/drift-beacon/Dockerfile" ]; then
   DOCKERFILE="$ROOT/drift-beacon/Dockerfile"
@@ -62,6 +64,10 @@ if [ "$REPOSITORY" = source ] && ! grep -Eq 'ghcr.io/rshallam/drift-beacon-serve
   echo "Could not find the artifact push tag in $VERSION_FILE" >&2
   exit 1
 fi
+if [ "$REPOSITORY" = source ] && ! grep -Eq '^  "version": "[^"]*",$' "$SERVER_PACKAGE"; then
+  echo "Could not find the version in $SERVER_PACKAGE" >&2
+  exit 1
+fi
 
 # Portable across BSD and GNU sed, preserving existing file modes and formatting.
 TEMP_FILE="$(mktemp)"
@@ -74,6 +80,7 @@ replace "s|^ARG SERVER_IMAGE=.*|ARG SERVER_IMAGE=ghcr.io/rshallam/drift-beacon-s
 replace "s|^version: .*|version: \"${VERSION}\"|" "$CONFIG_FILE"
 if [ "$REPOSITORY" = source ]; then
   replace "s|ghcr.io/rshallam/drift-beacon-server:[^ \"]*|ghcr.io/rshallam/drift-beacon-server:${VERSION}|g" "$VERSION_FILE"
+  replace "s|^  \"version\": \"[^\"]*\",$|  \"version\": \"${VERSION}\",|" "$SERVER_PACKAGE"
 fi
 
 echo "Bumped $REPOSITORY server and release metadata to ${VERSION}"

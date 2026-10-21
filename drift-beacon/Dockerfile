@@ -2,7 +2,7 @@
 
 ARG NODE_VERSION=26.10.0
 ARG BUILD_FROM
-ARG SERVER_IMAGE=ghcr.io/rshallam/drift-beacon-server:0.2.51
+ARG SERVER_IMAGE=ghcr.io/rshallam/drift-beacon-server:0.2.52
 
 FROM ${SERVER_IMAGE} AS server
 FROM ${BUILD_FROM} AS runtime
@@ -56,7 +56,7 @@ COPY --from=server /app ./
 COPY rootfs /
 
 RUN chmod +x /usr/local/bin/*.sh \
-    && chmod +x /etc/s6-overlay/s6-rc.d/*/run
+    && chmod +x /etc/s6-overlay/s6-rc.d/*/run /etc/s6-overlay/s6-rc.d/*/finish
 RUN mkdir -p /data
 
 # DATA_DIR: the add-on's persistent volume. Without it the server writes `data` in its working directory, inside the
@@ -69,6 +69,8 @@ ENV NODE_ENV=production \
 EXPOSE 9000
 EXPOSE 9001
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:${PORT}/api/device/status', (r) => {let d='';r.on('data',c=>d+=c);r.on('end',()=>{try{const j=JSON.parse(d);process.exit(j.status==='healthy'?0:1)}catch(e){process.exit(1)}}).on('error',()=>process.exit(1))})" || exit 1
+# Health check: liveness through nginx's plain-HTTP port, which serves with SSL on and off, so the proxy path is tested
+# too. 10 s apart: the Supervisor shows the app as starting until the first result. No --start-interval: it needs
+# Docker 25, and the Supervisor still supports 24.
+HEALTHCHECK --interval=10s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -fsS -o /dev/null "http://localhost:${NGINX_PORT_HTTP}/api/livez" || exit 1

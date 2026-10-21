@@ -22,6 +22,10 @@ When either configured certificate file is missing, the add-on creates or reuses
 
 The HTTP listener remains available when SSL is enabled and does not redirect to HTTPS. On hosts with IPv6 support, both address families have listeners.
 
+## Restart after a failure
+
+Turn on **Watchdog** on the app's Info page. If Drift Beacon stops answering or fails, Home Assistant then restarts it for you. Watchdog is off until you turn it on; without it, a failed app shows as stopped until you start it again.
+
 ## Data and integration
 
 The hub persists its data under the add-on's `/data` directory. Preserve this data when moving or restoring the add-on; an activity export does not include all hub identity, authentication, and server state.
