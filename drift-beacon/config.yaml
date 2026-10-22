@@ -1,44 +1,51 @@
 name: Drift Beacon
-version: "0.2.52"
+version: "0.3.0"
+# Pulled as image:version, the multi-arch image core's publish-server.sh pushes. Core's own copy has no image,
+# so a local /addons copy builds instead.
+image: ghcr.io/rshallam/drift-beacon-server
 slug: drift-beacon
 description: Activity tracking
 url: https://github.com/drift-beacon/ha-app
-webui: "[PROTO:ssl]://[HOST]:[PORT:9000]"
 arch:
   - aarch64
+  - amd64
+# The host's own network, so plugins reach devices on the LAN and the hub answers mDNS. Docker publishes no ports then:
+# the hub binds the ports of the app's Network settings itself, which the Supervisor still keeps from `ports:` below.
+host_network: true
 ports:
-  9000/tcp: 9000
-  9001/tcp: 9001
+  9820/tcp: 9820
+  9821/tcp: 9821
 ports_description:
-  9000/tcp: Drift Beacon (HTTPS)
-  9001/tcp: Drift Beacon (HTTP)
+  9820/tcp: Web dashboard (HTTPS)
+  9821/tcp: Mobile app and integrations (HTTP)
+webui: https://[HOST]:[PORT:9820]
+# The Supervisor's outside check, with Watchdog on: every 120 s, a restart after two misses. It calls the hassio
+# gateway, 172.30.32.1, on the HTTPS port of the Network settings, without checking the certificate.
+watchdog: https://[HOST]:[PORT:9820]/api/livez
+# Only what the image doesn't set and the server doesn't read from the options or the Supervisor.
 environment:
-  NODE_ENV: production
-  DEVICE_TYPE: home_assistant
   DEVICE_NAME: Home Assistant
-  PUSH_WORKER_URL: https://push.driftbeacon.app
 startup: application
 boot: auto
-# The Supervisor's outside check, with Watchdog on: every 120 s, a restart after two misses. 9001 serves with SSL off
-# too.
-watchdog: "http://[HOST]:[PORT:9001]/api/livez"
-# Seconds Home Assistant waits for the add-on to stop before killing it (10 when unset): the server's graceful
-# shutdown, then s6-overlay's final sleep. The server's tests check it covers both with a margin.
+# The image starts tini as PID 1, so the Supervisor adds no init of its own.
+init: false
+# Seconds Home Assistant waits for the app to stop before killing it (10 when unset). tini passes the SIGTERM to node,
+# so this has to cover the server's graceful shutdown. The server's tests check it does, with a margin.
 timeout: 30
+# /ssl, read-only: where the certfile and keyfile options are.
 map:
   - type: ssl
 schema:
-  ssl: bool
+  # MDNS_HOSTNAME: the name the hub claims on the LAN, as <name>.local. The server checks it at start.
+  mdns_hostname: str?
+  # TLS_CERT_FILE and TLS_KEY_FILE: file names under /ssl. Empty is the hub's own self-signed certificate.
   certfile: str?
   keyfile: str?
-  # PLUGIN_UI_TRUSTED_ORIGINS: browser origins besides the add-on's own.
+  # PLUGIN_UI_TRUSTED_ORIGINS: browser origins besides the app's own.
   trusted_origins: str?
   # LOG_LEVEL: debug adds Debug lines to the log. Warnings and errors are always logged, and the server refuses to start
   # on any other value, so the list holds exactly the two it accepts. Required with a default, so the form shows it.
   log_level: list(info|debug)
 options:
-  ssl: true
-  certfile: fullchain.pem
-  keyfile: privkey.pem
+  mdns_hostname: driftbeacon
   log_level: info
-init: false

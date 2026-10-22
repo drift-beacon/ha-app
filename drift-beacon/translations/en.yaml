@@ -1,15 +1,18 @@
 configuration:
-  ssl:
-    name: HTTPS
-    description: Serve the hub over HTTPS on port 9000. HTTP stays available on port 9001.
+  mdns_hostname:
+    name: Network name
+    description: The hub's name on your network. Computers open the dashboard at this name followed by .local, on the HTTPS port. Lowercase letters, digits and hyphens.
   certfile:
     name: Certificate file
-    description: Certificate filename in the /ssl share. A self-signed certificate is used when it is missing.
+    description: A certificate of your own, by its file name in the /ssl share, for example fullchain.pem. Leave it empty to use the hub's own certificate, which each browser asks you to accept once.
   keyfile:
     name: Private key file
-    description: Private-key filename in the /ssl share.
+    description: The private key of that certificate, by its file name in the /ssl share, for example privkey.pem. Set both files or neither.
   trusted_origins:
     name: Trusted origins
     description: Extra browser origins allowed to use the hub, comma-separated. Only needed behind a reverse proxy that rewrites Host.
   log_level:
     name: Log level
+network:
+  "9820/tcp": The web dashboard, over HTTPS. Open Web UI uses this port. The app doesn't start without it.
+  "9821/tcp": The mobile app, the Drift Beacon integration and other devices, over HTTP. A browser opening it is sent on to the HTTPS port. The app doesn't start without it.
